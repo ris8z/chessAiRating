@@ -1,23 +1,36 @@
 const squareSize = 50;
 
+let currentPlayer = "w";
+let isGameOver = false;
+
+const aiWhite = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
+const aiBlack = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
+
 function setup() {
     createCanvas(8 * squareSize, 8 * squareSize);
-    console.log(chess.fen()); 
 }
 
 function draw() {
     background(220);
     drawBoard();
     drawPieces();
+    playGame();
+}
+
+function playGame() {
+    if (!isGameOver && frameCount % 60 == 0) {
+        playTurn();
+        setTimeout(playGame, 1000);
+    }
 }
 
 function drawBoard() {
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
             if ((x + y) % 2 === 0) {
-                fill(240); // white 
+                fill(240); // white
             } else {
-                fill(100); // black 
+                fill(100); // black
             }
             rect(x * squareSize, y * squareSize, squareSize, squareSize);
         }
@@ -25,7 +38,7 @@ function drawBoard() {
 }
 
 function drawPieces() {
-    const board = chess.board(); // get the board as matrix 
+    const board = chess.board(); // get the board as matrix
     textSize(squareSize * 0.8);
     textAlign(CENTER, CENTER);
 
@@ -43,4 +56,51 @@ function drawPieces() {
             }
         }
     }
+}
+
+async function playTurn() {
+    const endpoint = currentPlayer === "w" ? aiWhite : aiBlack;
+    const fen = chess.fen();
+
+    try {
+        const move = await getMove(fen, endpoint);
+
+        if (chess.move(move)) {
+            console.log(
+                `${currentPlayer === "w" ? "White" : "Black"} played ${move}`,
+            );
+            currentPlayer = currentPlayer === "w" ? "b" : "w";
+
+            if (chess.isGameOver()) {
+                isGameOver = true;
+                console.log("GameOver", chess.png());
+            }
+        } else {
+            console.log("Invalid move", move);
+        }
+    } catch (error) {
+        console.log("Error while the api call: ", error);
+    }
+}
+
+async function getMove(fen, url) {
+    const data = new FormData();
+    data.append("fen", fen);
+
+    const options = {
+        method: "POST",
+        headers: {
+            "x-rapidapi-key": "a4fef1ee6fmshb40f31ccdbfdd52p19565bjsn14ca66e0e06f",
+            "x-rapidapi-host": "chess-stockfish-16-api.p.rapidapi.com",
+        },
+        body: data,
+    };
+
+    const response = await fetch(url, options);
+    const dataBack = await response.json();
+    const bestMove = dataBack.bestmove;
+    const from = bestMove.slice(0, 2);
+    const to = bestMove.slice(2, 4);
+
+    return { from, to };
 }

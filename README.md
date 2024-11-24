@@ -8,3 +8,10 @@
 > you can run the website locally with "python3 -m http.server 8000"
 
 
+
+# keys
+
+lichess.org/api 
+key = "lip_xb26SCLeLjVUNJ1vrrlh"
+
+
