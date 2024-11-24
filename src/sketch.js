@@ -35,7 +35,7 @@ function drawBoard() {
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
             if ((x + y) % 2 === 0) {
-                fill(240); // white
+                fill(215); // white
             } else {
                 fill(100); // black
             }
@@ -49,11 +49,16 @@ function drawPieces() {
     textSize(squareSize * 0.8);
     textAlign(CENTER, CENTER);
 
+    const pieceSymbols = {
+        p: "♟", n: "♞", b: "♝", r: "♜", q: "♛", k: "♚", // Black pieces
+        P: "♙", N: "♘", B: "♗", R: "♖", Q: "♕", K: "♔"  // White pieces
+      };
+
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
             const piece = board[y][x];
             if (piece) {
-                const symbol = piece.type.toUpperCase();
+                const symbol =  pieceSymbols[piece.color === "w" ? piece.type.toUpperCase() : piece.type];
                 fill(piece.color === "w" ? 0 : 255);
                 text(
                     symbol,
