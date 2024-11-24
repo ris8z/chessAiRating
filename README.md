@@ -5,7 +5,6 @@
 3. 4 Apis that plays against each others.
 
 > [!TIP]
-> you can run the website locally with 
-❯ python3 -m http.server 8000
+> you can run the website locally with "python3 -m http.server 8000"
 
 
