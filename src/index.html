@@ -16,6 +16,7 @@
   <body>
     <script>
       const squareSize = 50;
+      let selectedSquare = null;
 
       function setup() {
         createCanvas(8 * squareSize, 8 * squareSize);
@@ -26,6 +27,7 @@
         background(220);
         drawBoard();
         drawPieces();
+        highlightSelectedSquare();
       }
 
       function drawBoard() {
@@ -63,6 +65,48 @@
                 x * squareSize + squareSize / 2,
                 y * squareSize + squareSize / 2,
               );
+            }
+          }
+        }
+      }
+
+
+      function highlightSelectedSquare() {
+        if (selectedSquare) {
+          const { x, y } = selectedSquare;
+          fill(0, 255, 0, 100); 
+          rect(x * squareSize, y * squareSize, squareSize, squareSize);
+        }
+      }
+
+      function mousePressed() {
+        const x = Math.floor(mouseX / squareSize);
+        const y = Math.floor(mouseY / squareSize);
+
+        // Ensure the click is within the board
+        if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+          const clickedSquare = `${String.fromCharCode(97 + x)}${8 - y}`;
+
+          if (selectedSquare) {
+            // Try to move the piece
+            const move = chess.move({
+              from: selectedSquare.name,
+              to: clickedSquare,
+              promotion: "q", // Promote pawns to queens by default
+            });
+
+            if (move) {
+              console.log("Move:", move);
+            } else {
+              console.log("Invalid move");
+            }
+
+            selectedSquare = null; // Reset selection after move attempt
+          } else {
+            // Select square
+            const piece = chess.get(clickedSquare);
+            if (piece && piece.color === chess.turn()) {
+              selectedSquare = { name: clickedSquare, x, y };
             }
           }
         }
