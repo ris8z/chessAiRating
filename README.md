@@ -4,3 +4,8 @@
 2. Chess.js to get the logic of chess.
 3. 4 Apis that plays against each others.
 
+> [!TIP]
+> you can run the website locally with 
+❯ python3 -m http.server 8000
+
+
