@@ -2,6 +2,7 @@ const squareSize = 50;
 
 let currentPlayer = "w";
 let isGameOver = false;
+let waitingForMove = false; // to prevent duplicate moves.
 
 const aiWhite = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
 const aiBlack = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
@@ -14,13 +15,13 @@ function draw() {
     background(220);
     drawBoard();
     drawPieces();
-    playGame();
-}
 
-function playGame() {
-    if (!isGameOver && frameCount % 60 == 0) {
-        playTurn();
-        setTimeout(playGame, 1000);
+    if (!isGameOver && !waitingForMove) {
+        waitingForMove = true; // lock until current move is done.
+
+        setTimeout(() => {
+            playTurn();
+        }, 1000); // wait 1s between calls so we do not get banned.
     }
 }
 
@@ -67,7 +68,7 @@ async function playTurn() {
 
         if (chess.move(move)) {
             console.log(
-                `${currentPlayer === "w" ? "White" : "Black"} played ${move}`,
+                `${currentPlayer === "w" ? "White" : "Black"} played {from:${move.from} to:${move.to}}`,
             );
             currentPlayer = currentPlayer === "w" ? "b" : "w";
 
@@ -80,6 +81,8 @@ async function playTurn() {
         }
     } catch (error) {
         console.log("Error while the api call: ", error);
+    } finally {
+        waitingForMove = false; // unlock so the next move can be done.
     }
 }
 
