@@ -11,7 +11,7 @@
 
 # keys
 
-lichess.org/api 
-key = "lip_xb26SCLeLjVUNJ1vrrlh"
+## stockfish api link
+https://rapidapi.com/cinnamon17/api/chess-stockfish-16-api/playground/apiendpoint_60a6e103-b808-4b48-9626-263604bd35bb
 
 
