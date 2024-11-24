@@ -21,7 +21,7 @@ function draw() {
 
         setTimeout(() => {
             playTurn();
-        }, 1000); // wait 1s between calls so we do not get banned.
+        }, 200); // wait 1s between calls so we do not get banned.
     }
 }
 
@@ -66,22 +66,20 @@ async function playTurn() {
     try {
         const move = await getMove(fen, endpoint);
 
-        if (chess.move(move)) {
-            console.log(
-                `${currentPlayer === "w" ? "White" : "Black"} played {from:${move.from} to:${move.to}}`,
-            );
-            currentPlayer = currentPlayer === "w" ? "b" : "w";
+        if (!chess.move(move))
+            throw new Error(`Invalid move from API: ${JSON.stringify(move)}`);
+        
+        console.log(`${currentPlayer === "w" ? "White" : "Black"} played {from:${move.from} to:${move.to}}`);
 
-            if (chess.isGameOver()) {
-                isGameOver = true;
-                console.log("GameOver", chess.png());
-            }
-        } else {
-            console.log("Invalid move", move);
-        }
-    } catch (error) {
+        if (chess.isGameOver())
+            evaluateWinner();
+         
+        currentPlayer = currentPlayer === "w" ? "b" : "w"; //change the turn of the player
+    } 
+    catch (error) {
         console.log("Error while the api call: ", error);
-    } finally {
+    }
+    finally {
         waitingForMove = false; // unlock so the next move can be done.
     }
 }
@@ -106,4 +104,21 @@ async function getMove(fen, url) {
     const to = bestMove.slice(2, 4);
 
     return { from, to };
+}
+
+function evaluateWinner(){
+    isGameOver = true;
+
+    if(chess.isCheckmate()){
+        const winner = currentPlayer === "w" ? "Balck": "White"; //whoever is the turn is not the winner
+        console.log(`Game over: ${winner} wins by checkmate`);
+    }
+    else if (chess.isDraw()){
+        console.log(`Game over due too draw`);
+    }
+    else{
+        console.log(`Game over due too strange condition`);
+    }
+
+    console.log("PNG: ", chess.png());
 }
