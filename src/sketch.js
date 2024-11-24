@@ -4,6 +4,9 @@ let currentPlayer = "w";
 let isGameOver = false;
 let waitingForMove = false; // to prevent duplicate moves.
 
+let maxMoves = 50; // to get an actual winner
+let moveCount = 0;
+
 const aiWhite = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
 const aiBlack = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
 
@@ -69,10 +72,19 @@ async function playTurn() {
         if (!chess.move(move))
             throw new Error(`Invalid move from API: ${JSON.stringify(move)}`);
         
-        console.log(`${currentPlayer === "w" ? "White" : "Black"} played {from:${move.from} to:${move.to}}`);
+        console.log(`(${moveCount}) -> ${currentPlayer === "w" ? "White" : "Black"} played {from:${move.from} to:${move.to}}`);
 
-        if (chess.isGameOver())
+        moveCount++;
+        if (moveCount >= maxMoves){
+            evaluateMaterialWinner();
+            return;
+        }
+
+        
+        if (chess.isGameOver()){
             evaluateWinner();
+            return;
+        }
          
         currentPlayer = currentPlayer === "w" ? "b" : "w"; //change the turn of the player
     } 
@@ -120,5 +132,55 @@ function evaluateWinner(){
         console.log(`Game over due too strange condition`);
     }
 
-    console.log("PNG: ", chess.png());
+    console.log("PGN: ", chess.pgn());
+}
+
+function evaluateMaterialWinner(){
+    isGameOver = true;
+    console.log("GameOver -:- Rached the max numbers of moves");
+
+    const board = chess.board();
+    const material = { "w":0, "b":0 };
+    const values = {
+        "p": 1,
+        "n": 3,
+        "b": 4,
+        "r": 5,
+        "q": 9,
+        "k": 0,
+    };
+
+    //this is just an idea bc in reality some pices have more value in the corners like the king
+    const positionBonus = [
+        [-0.50, -0.40, -0.40, -0.40, -0.40, -0.40, -0.40, -0.50],
+        [-0.40, -0.20,  0.00,  0.00,  0.00,  0.00, -0.20, -0.40],
+        [-0.40,  0.00,  0.10,  0.20,  0.20,  0.10,  0.00, -0.40],
+        [-0.40,  0.00,  0.20,  0.25,  0.25,  0.20,  0.00, -0.40],
+        [-0.40,  0.00,  0.20,  0.25,  0.25,  0.20,  0.00, -0.40],
+        [-0.40,  0.00,  0.10,  0.20,  0.20,  0.10,  0.00, -0.40],
+        [-0.40, -0.20,  0.00,  0.00,  0.00,  0.00, -0.20, -0.40],
+        [-0.50, -0.40, -0.40, -0.40, -0.40, -0.40, -0.40, -0.50],
+    ]
+
+    board.forEach((row, i) => {
+        row.forEach((piece, j) => {
+            if (piece){ 
+                const pieceVal = values[piece.type] ?? 0;
+                const positionVal = positionBonus[i][j];
+                material[piece.color] += pieceVal + positionVal; 
+            }
+        })
+    });
+
+    console.log(`Materials: White ${material["w"]}, Black ${material["b"]}`);
+    if (material.w > material.b){
+        console.log("White wins");
+    }
+    else if (material.w < material.b){
+        console.log("Black wins");
+    }else{
+        console.log("Draws!!!");
+    }
+
+    console.log("PGN: ", chess.pgn());
 }
