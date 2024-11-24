@@ -7,11 +7,14 @@ let waitingForMove = false; // to prevent duplicate moves.
 let maxMoves = 50; // to get an actual winner
 let moveCount = 0;
 
+let isSimulationOn = false;
+
 const aiWhite = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
 const aiBlack = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
 
 function setup() {
-    createCanvas(8 * squareSize, 8 * squareSize);
+    const canvas = createCanvas(8 * squareSize, 8 * squareSize);
+    canvas.parent("sketch"); // attach the canvas to the container
 }
 
 function draw() {
@@ -19,7 +22,7 @@ function draw() {
     drawBoard();
     drawPieces();
 
-    if (!isGameOver && !waitingForMove) {
+    if (!isGameOver && !waitingForMove && isSimulationOn) {
         waitingForMove = true; // lock until current move is done.
 
         setTimeout(() => {
@@ -184,3 +187,20 @@ function evaluateMaterialWinner(){
 
     console.log("PGN: ", chess.pgn());
 }
+
+
+//Event listener
+document.getElementById("startBtn").addEventListener("click", () => {
+    if (!isGameOver && !isSimulationOn){
+        isSimulationOn = true;
+        console.log("Simulation started now");
+    }
+});
+
+
+document.getElementById("pauseBtn").addEventListener("click", () => {
+    if (isSimulationOn){
+        isSimulationOn = false; 
+        console.log("Simluation paused now");
+    }
+});

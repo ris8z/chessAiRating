@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chess AI Tournament</title>
@@ -8,12 +9,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 
     <script type="module">
-      import { Chess } from "https://cdn.skypack.dev/chess.js";
-      window.chess = new Chess();
+        import {Chess} from "https://cdn.skypack.dev/chess.js";
+        window.chess = new Chess();
     </script>
-  </head>
 
-  <body>
-    <script src="sketch.js"></script>
-  </body>
+    <script src="sketch.js" defer></script>
+</head>
+
+<body>
+    <button id="startBtn">Start</button>
+    <button id="pauseBtn">Pause</button>
+
+    <!-- Container for the canvas -->
+    <div id="sketch"></div>
+</body>
+
 </html>
