@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chess AI Tournament</title>
@@ -8,109 +9,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 
     <script type="module">
-      import { Chess } from "https://cdn.skypack.dev/chess.js";
-      window.chess = new Chess();
+        import {Chess} from "https://cdn.skypack.dev/chess.js";
+        window.chess = new Chess();
     </script>
-  </head>
 
-  <body>
-    <script>
-      const squareSize = 50;
-      let selectedSquare = null;
+    <script src="sketch.js" defer></script>
+</head>
 
-      function setup() {
-        createCanvas(8 * squareSize, 8 * squareSize);
-        console.log(chess.fen()); // Stampa il FEN iniziale
-      }
+<body>
+    <button id="startBtn">Start</button>
+    <button id="pauseBtn">Pause</button>
 
-      function draw() {
-        background(220);
-        drawBoard();
-        drawPieces();
-        highlightSelectedSquare();
-      }
+    <!-- Container for the canvas -->
+    <div id="sketch"></div>
+</body>
 
-      function drawBoard() {
-        for (let x = 0; x < 8; x++) {
-          for (let y = 0; y < 8; y++) {
-            // alternate colours
-            if ((x + y) % 2 === 0) {
-              fill(215); // Colore chiaro
-            } else {
-              fill(100); // Colore scuro
-            }
-            rect(x * squareSize, y * squareSize, squareSize, squareSize);
-          }
-        }
-      }
-
-      function drawPieces() {
-        const board = chess.board(); // Ottieni lo stato della scacchiera
-        textSize(squareSize * 0.8);
-        textAlign(CENTER, CENTER);
-
-        const pieceSymbols = {
-          p: "♟", n: "♞", b: "♝", r: "♜", q: "♛", k: "♚", // Black pieces
-          P: "♙", N: "♘", B: "♗", R: "♖", Q: "♕", K: "♔"  // White pieces
-        };
-
-        for (let y = 0; y < 8; y++) {
-          for (let x = 0; x < 8; x++) {
-            const piece = board[y][x];
-            if (piece) {
-              const symbol = pieceSymbols[piece.color === "w" ? piece.type.toUpperCase() : piece.type];
-              fill(piece.color === "w" ? 0 : 255);
-              text(
-                symbol,
-                x * squareSize + squareSize / 2,
-                y * squareSize + squareSize / 2,
-              );
-            }
-          }
-        }
-      }
-
-
-      function highlightSelectedSquare() {
-        if (selectedSquare) {
-          const { x, y } = selectedSquare;
-          fill(0, 255, 0, 100); 
-          rect(x * squareSize, y * squareSize, squareSize, squareSize);
-        }
-      }
-
-      function mousePressed() {
-        const x = Math.floor(mouseX / squareSize);
-        const y = Math.floor(mouseY / squareSize);
-
-        // Ensure the click is within the board
-        if (x >= 0 && x < 8 && y >= 0 && y < 8) {
-          const clickedSquare = `${String.fromCharCode(97 + x)}${8 - y}`;
-
-          if (selectedSquare) {
-            // Try to move the piece
-            const move = chess.move({
-              from: selectedSquare.name,
-              to: clickedSquare,
-              promotion: "q", // Promote pawns to queens by default
-            });
-
-            if (move) {
-              console.log("Move:", move);
-            } else {
-              console.log("Invalid move");
-            }
-
-            selectedSquare = null; // Reset selection after move attempt
-          } else {
-            // Select square
-            const piece = chess.get(clickedSquare);
-            if (piece && piece.color === chess.turn()) {
-              selectedSquare = { name: clickedSquare, x, y };
-            }
-          }
-        }
-      }
-    </script>
-  </body>
 </html>
