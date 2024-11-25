@@ -50,15 +50,16 @@ function drawPieces() {
     textAlign(CENTER, CENTER);
 
     const pieceSymbols = {
-        p: "♟", n: "♞", b: "♝", r: "♜", q: "♛", k: "♚", // Black pieces
-        P: "♙", N: "♘", B: "♗", R: "♖", Q: "♕", K: "♔"  // White pieces
+        p: "♟", n: "♞", b: "♝", r: "♜", q: "♛", k: "♚", // Bold pieces
+        P: "♙", N: "♘", B: "♗", R: "♖", Q: "♕", K: "♔"  // Slim pieces
       };
 
     for (let y = 0; y < 8; y++) {
         for (let x = 0; x < 8; x++) {
             const piece = board[y][x];
             if (piece) {
-                const symbol =  pieceSymbols[piece.color === "w" ? piece.type.toUpperCase() : piece.type];
+                const symbol =  pieceSymbols[piece.type];
+                stroke(0); // bord color black 
                 fill(piece.color === "w" ? 0 : 255);
                 text(
                     symbol,
