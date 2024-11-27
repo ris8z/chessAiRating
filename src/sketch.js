@@ -4,13 +4,13 @@ let currentPlayer = "w";
 let isGameOver = false;
 let waitingForMove = false; // to prevent duplicate moves.
 
-let maxMoves = 50; // to get an actual winner
+let maxMoves = 40; // to get an actual winner
 let moveCount = 0;
 
 let isSimulationOn = false;
 
 const aiWhite = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
-const aiBlack = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
+const aiBlack = "https://chess-move-maker.p.rapidapi.com/chess";
 
 function setup() {
     const canvas = createCanvas(8 * squareSize, 8 * squareSize);
@@ -27,7 +27,7 @@ function draw() {
 
         setTimeout(() => {
             playTurn();
-        }, 200); // wait 1s between calls so we do not get banned.
+        }, 1000); // wait 1s between calls so we do not get banned.
     }
 }
 
@@ -60,7 +60,7 @@ function drawPieces() {
             if (piece) {
                 const symbol =  pieceSymbols[piece.type];
                 stroke(0); // bord color black 
-                fill(piece.color === "w" ? 0 : 255);
+                fill(piece.color === "w" ? 255 : 0);
                 text(
                     symbol,
                     x * squareSize + squareSize / 2,
@@ -106,6 +106,62 @@ async function playTurn() {
 }
 
 async function getMove(fen, url) {
+    if(url == "https://chess-stockfish-16-api.p.rapidapi.com/chess/api"){
+        return stockfishJS(fen);
+    }else{
+        return chessmovemakerJS(fen);
+    }
+}
+
+async function chessmovemakerJS(fen){
+    const url = "https://chess-move-maker.p.rapidapi.com/chess";
+
+    function fenToBoard(fen) {
+        const pieceMap = {
+            'p': 'bP', 'r': 'bR', 'n': 'bN', 'b': 'bB', 'q': 'bQ', 'k': 'bK',
+            'P': 'wP', 'R': 'wR', 'N': 'wN', 'B': 'wB', 'Q': 'wQ', 'K': 'wK',
+        };
+
+        const rows = fen.split(' ')[0].split('/');
+        return rows.map(row => {
+            const expandedRow = [];
+            for (const char of row) {
+                if (isNaN(char)) {
+                    expandedRow.push(pieceMap[char] || '');
+                } else {
+                    expandedRow.push(...Array(parseInt(char)).fill(''));
+                }
+            }
+            return expandedRow;
+        });
+    }
+
+    const options = {
+        method: "POST",
+        headers: {
+            "x-rapidapi-key": "a4fef1ee6fmshb40f31ccdbfdd52p19565bjsn14ca66e0e06f",
+            "x-rapidapi-host": "chess-move-maker.p.rapidapi.com",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            color: "BLACK", 
+            positions: fenToBoard(fen), 
+        }),
+    };
+
+    const response = await fetch(url, options);
+    const moves = await response.json();
+
+    if (moves.length > 0) {
+        const { from, to } = moves[0];
+        return { from, to };
+    } else {
+        throw new Error("No moves returned by the API");
+    }
+}
+
+async function stockfishJS(fen) {
+    const url = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
     const data = new FormData();
     data.append("fen", fen);
 
