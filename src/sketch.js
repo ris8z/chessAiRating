@@ -4,7 +4,7 @@ let currentPlayer = "w";
 let isGameOver = false;
 let waitingForMove = false; // to prevent duplicate moves.
 
-let maxMoves = 10; // to get an actual winner
+let maxMoves = 50; // to get an actual winner
 let moveCount = 0;
 
 let isSimulationOn = false;
@@ -161,7 +161,7 @@ async function chessmovemakerJS(fen){
 }
 
 async function stockfishJS(fen) {
-    const url = "https://chess-stockfish-16-api.p.rapidapi.com/chess/api";
+    const url = "https://chess-stockfish-17-api.p.rapidapi.com/chess/api";
     const data = new FormData();
     //const peppeKey1 = "a4fef1ee6fmshb40f31ccdbfdd52p19565bjsn14ca66e0e06f"; // the one with github (giving problems)
     const peppekey2 = "b6afcf768dmsh065db0d82936420p13e2f4jsn04b3f64caa77"; // the one with 59299 (hopefully not giving problems)

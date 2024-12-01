@@ -17,3 +17,5 @@ https://rapidapi.com/cinnamon17/api/chess-stockfish-16-api/playground/apiendpoin
 
 ## chess move make api link
 https://rapidapi.com/exit-germany-exit-germany-default/api/chess-move-maker/playground/apiendpoint_b6084de1-9124-477d-b9f3-f22e09220937
+
+https://chess-api.com/
